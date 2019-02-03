@@ -3,7 +3,7 @@
 Plugin Name: GP Elements Admin Link
 Plugin URI: https://github.com/WestCoastDigital/gp-elements-admin
 Description: Adds GeneratePress Elements lnks to admin bar
-Version: 1.0.0
+Version: 1.1
 Author: Jon Mather
 Author URI: https://westcoastdigital.com.au/
 License: GPLv2 or later
@@ -53,8 +53,15 @@ function gp_elements_admin_bar_links() {
 
 	$wp_ver = get_bloginfo( 'version' );
 
+	$iconurl = GP_ELEMENTS_URL . '/images/edit-page-icon.png';
+
+	$iconspan = '<span class="ab-icon" style="
+    float:left; width:22px !important; height:22px !important;
+    margin-left: 5px !important; margin-top: 5px !important;
+    background-image:url(\''.$iconurl.'\')!important;background-size: contain;background-repeat: no-repeat;"></span>';
+
 	if ( floatval( $wp_ver ) >= 3.8 ) {
-		$title = '<span class="ab-icon"></span><span class="ab-label">' . __( 'Elements', 'gp_elements' ) . '</span>';
+		$title = $iconspan.'<span class="ab-label">' . __( 'Elements', 'gp_elements' ) . '</span>';
 		$img   = '';
 	} else {
 		$title = '<span class="ab-icon"><img src="' . GP_ELEMENTS_URL . '/images/edit-page-icon.png" /></span><span class="ab-label">' . __( 'Edit Content', 'gp_elements' ) . '</span>';
@@ -69,6 +76,16 @@ function gp_elements_admin_bar_links() {
 			'title' => $title,
 			'href'  => false,
 			'id'    => 'gp_elements_links' . $img,
+		)
+	);
+
+
+	$wp_admin_bar->add_menu(
+		array(
+			'title'  => __('Add New', 'generatepress'),
+			'href'   => admin_url('post-new.php?post_type=gp_elements'),
+			'id'     => 'new_gp_element',
+			'parent' => 'gp_elements_links' . $img,
 		)
 	);
 
@@ -128,48 +145,3 @@ function gp_elements_admin_bar_links() {
 		endif;
 
 	}
-// }
-
-function gp_elements_sort_hierarchical_posts( $posts ) {
-	$final_post_array = array();
-
-	foreach ( $posts as $index => $post ) {
-		if ( 0 === $post->post_parent ) {
-			$post_id_array[0][ $index ] = $post->ID;
-		} else {
-			$post_id_array[ $post->post_parent ][ $index ] = $post->ID;
-		}
-	}
-
-	ksort( $post_id_array );
-
-	foreach ( $post_id_array[0] as $index => $post_id ) {
-		$final_post_array[] = $posts[ $index ];
-		gp_elements_check_children( $post_id, $post_id_array, $final_post_array, $posts );
-	}
-
-	return $final_post_array;
-}
-
-function gp_elements_check_children( $post_id, $post_id_array, &$final_post_array, $posts ) {
-	if ( isset( $post_id_array[ $post_id ] ) ) {
-		foreach ( $post_id_array[ $post_id ] as $index => $child_id ) {
-			$final_post_array[] = $posts[ $index ];
-			gp_elements_check_children( $child_id, $post_id_array, $final_post_array, $posts );
-		}
-	}
-}
-
-function gp_elements_activation_callback() {
-	$options = get_option( 'gp_elements_settings', array() );
-
-	$default = array(
-		'types' => array(
-			'page' => 'Pages',
-		),
-	);
-
-	if ( empty( $options ) ) {
-		update_option( 'gp_elements_settings', $default );
-	}
-}
