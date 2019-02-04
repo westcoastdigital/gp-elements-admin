@@ -3,7 +3,7 @@
 Plugin Name: GP Elements Admin Link
 Plugin URI: https://github.com/WestCoastDigital/gp-elements-admin
 Description: Adds GeneratePress Elements lnks to admin bar
-Version: 1.2
+Version: 1.3
 Author: Jon Mather
 Author URI: https://westcoastdigital.com.au/
 License: GPLv2 or later
@@ -92,7 +92,6 @@ function gp_elements_admin_bar_links() {
 	$wp_admin_bar->add_menu(
 		array(
 			'title'  => __('Headers', 'generatepress'),
-			// 'href'   => admin_url('post-new.php?post_type=gp_elements'),
 			'id'     => 'header',
 			'parent' => 'gp_elements_links' . $img,
 		)
@@ -101,7 +100,6 @@ function gp_elements_admin_bar_links() {
 	$wp_admin_bar->add_menu(
 		array(
 			'title'  => __('Layouts', 'generatepress'),
-			// 'href'   => admin_url('post-new.php?post_type=gp_elements'),
 			'id'     => 'layout',
 			'parent' => 'gp_elements_links' . $img,
 		)
@@ -110,7 +108,6 @@ function gp_elements_admin_bar_links() {
 	$wp_admin_bar->add_menu(
 		array(
 			'title'  => __('Hooks', 'generatepress'),
-			// 'href'   => admin_url('post-new.php?post_type=gp_elements'),
 			'id'     => 'hook',
 			'parent' => 'gp_elements_links' . $img,
 		)
@@ -160,6 +157,11 @@ function gp_elements_admin_bar_links() {
 				}
 
 				$url = get_edit_post_link( $post->ID );
+				if( $url ) {
+					$url = $url;
+				} else {
+				$url = admin_url('post.php?post=' . $post->ID . '&action=edit');
+				}
 
 				$wp_admin_bar->add_menu(
 					array(
