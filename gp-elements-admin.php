@@ -3,7 +3,7 @@
 Plugin Name: GP Elements Admin Link
 Plugin URI: https://github.com/WestCoastDigital/gp-elements-admin
 Description: Adds GeneratePress Elements lnks to admin bar
-Version: 1.1
+Version: 1.2
 Author: Jon Mather
 Author URI: https://westcoastdigital.com.au/
 License: GPLv2 or later
@@ -89,6 +89,33 @@ function gp_elements_admin_bar_links() {
 		)
 	);
 
+	$wp_admin_bar->add_menu(
+		array(
+			'title'  => __('Headers', 'generatepress'),
+			// 'href'   => admin_url('post-new.php?post_type=gp_elements'),
+			'id'     => 'header',
+			'parent' => 'gp_elements_links' . $img,
+		)
+	);
+
+	$wp_admin_bar->add_menu(
+		array(
+			'title'  => __('Layouts', 'generatepress'),
+			// 'href'   => admin_url('post-new.php?post_type=gp_elements'),
+			'id'     => 'layout',
+			'parent' => 'gp_elements_links' . $img,
+		)
+	);
+
+	$wp_admin_bar->add_menu(
+		array(
+			'title'  => __('Hooks', 'generatepress'),
+			// 'href'   => admin_url('post-new.php?post_type=gp_elements'),
+			'id'     => 'hook',
+			'parent' => 'gp_elements_links' . $img,
+		)
+	);
+
 	$post_type = 'gp_elements';
 
 		$args = array(
@@ -117,6 +144,7 @@ function gp_elements_admin_bar_links() {
 			}
 
 			foreach ( $gp_elements_query->posts as $post ) {
+				$type = get_post_meta( $post->ID, '_generate_element_type', true );
 
 				if ( 0 !== $post->post_parent && 'menu_order' === $args['orderby'] ) {
 					$label     = '&nbsp;&nbsp;&ndash; ' . ucwords( $post->post_title );
@@ -138,7 +166,7 @@ function gp_elements_admin_bar_links() {
 						'title'  => $label,
 						'href'   => $url,
 						'id'     => $post->ID,
-						'parent' => 'gp_elements_links' . $img,
+						'parent' => $type,
 					)
 				);
 			}
